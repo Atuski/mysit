@@ -1,0 +1,9 @@
+ul.blog-list{
+	list-style-type:none;
+}
+ul.blog_details_description{
+	list-style-type:none; 
+}
+ul.blog_details_description li{
+	display: inline-block;
+}
