@@ -27,7 +27,15 @@ def blog_detail(request,blog_id):
 	next_blog = Blog.objects.filter(created_time__lt=current_time).first()
 	context['next_blog']=next_blog
 	context['previous_blog']=previous_blog
-	return render(request,'blog/blog_detail.html',context)
+	#计数功能
+	if not request.COOKIES.get('blog_%s_read' % blog.pk):
+		blog.read_num += 1
+	blog.save()
+	context['read_num'] = blog.read_num
+	#设置cookie
+	response = render(request,'blog/blog_detail.html',context)
+	response.set_cookie('blog_%s_read' % blog.pk,'true')
+	return response
 #按照分类展示博客
 def blog_type(request,blogtype_id):
 	context = {}
