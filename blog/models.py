@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 class BlogType(models.Model):
 	type_name = models.CharField(max_length=30)
@@ -9,11 +10,12 @@ class BlogType(models.Model):
 		verbose_name_plural=verbose_name='分类'
 class Blog(models.Model):
 	title = models.CharField(max_length=30,verbose_name="主题")
-	content = models.TextField(verbose_name="内容")
+	content = RichTextUploadingField(verbose_name="内容")
 	author = models.ForeignKey(User,on_delete=models.DO_NOTHING)
 	created_time = models.DateTimeField(auto_now_add=True)
 	last_updatetime = models.DateTimeField(auto_now=True)
 	blog_type = models.ForeignKey(BlogType,on_delete=models.DO_NOTHING)
+	read_num = models.IntegerField(default = 0)
 	def __str__(self):
 		return "title:%s"%self.title
 	class Meta:
