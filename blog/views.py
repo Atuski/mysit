@@ -1,6 +1,8 @@
 from django.shortcuts import render,get_object_or_404,render_to_response
 from .models import * 
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
+from read_statistics.models import *
 # Create your views here.
 #展示博客列表和部分内容信息
 def blog_list(request):
@@ -29,9 +31,23 @@ def blog_detail(request,blog_id):
 	context['previous_blog']=previous_blog
 	#计数功能
 	if not request.COOKIES.get('blog_%s_read' % blog.pk):
+		'''
 		blog.read_num += 1
 	blog.save()
-	context['read_num'] = blog.read_num
+	'''
+		ct = ContentType.objects.get_for_model(Blog)
+		if ReadNum.objects.filter(content_type=ct,object_id=blog.pk).count():
+			#存在记录
+			readnum = ReadNum.objects.get(content_type=ct,object_id=blog.pk)
+		else:
+			#不存在对应的记录
+			readnum = ReadNum(content_type=ct,object_id=blog.pk)
+		#计数+1
+		readnum.read_num += 1
+		readnum.save()
+		#date = time
+
+	#context['read_num'] = readnum.read_num
 	#设置cookie
 	response = render(request,'blog/blog_detail.html',context)
 	response.set_cookie('blog_%s_read' % blog.pk,'true')
